@@ -5,7 +5,6 @@
     - 15Hz
     - 18Hz
     - 50hz clock for denoising 
-
     */
 
     module clock_module
