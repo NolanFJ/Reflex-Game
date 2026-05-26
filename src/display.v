@@ -6,17 +6,21 @@
 
 - can have something that keeps track of the count of button presses
 - should have a clock route to number module 
-
+- button presses should increment the score by 1
 */
 
 module display (
     input clk_sys,      // System clock for multiplexing (100MHz)
-    input [3:0] sec_ones,
-    input [3:0] sec_tens,
-    input [3:0] min_ones,
-    input [3:0] min_tens,
-    input sel,          // 0: minutes, 1: seconds
-    input adj,          // 0: normal, 1: adjustment (blinking)
+    input [3:0] digit_four,
+    input [3:0] digit_three,
+    input [3:0] digit_two,
+    input [3:0] digit_one,
+    input game_over,
+    input [3:0] score_digit_four,
+    input [3:0] score_digit_three,
+    input [3:0] score_digit_two,
+    input [3:0] score_digit_one,
+    input button_press, 
     output reg [6:0] seg,
     output reg dp,
     output reg [3:0] an
@@ -32,28 +36,72 @@ module display (
     
     // Select which digit to display (cycles every ~5ms at 100MHz)
     assign digit_select = mux_counter[19:18]; // change to [19:18]/[3:2] when running hardware/main_tb.v
-    
+
     // Determine digit to display and blanking
-    reg [3:0] digit_data;
-    reg digit_blank;
-    
+    reg [3:0] digit_data;  
+    reg game_over_prev = 0;  
+
+    /* Track button press count */
+    reg [2:0] press_count;
+    reg button_press_prev; 
+
+    always @ (posedge clk_sys) begin
+        if (game_over) 
+            game_over_prev <= 1'b1; 
+
+        if (rst) begin
+            press_count <= 3'd0;
+            button_press_prev <= 1'b0;
+        
+        end else begin
+            button_press_prev <= button_press;
+            if (~button_press_prev && button_press) begin
+                if (press_count == 3'd4) begin
+                    press_count <= 3'd4; // cap at 4
+                end else begin
+                    press_count <= press_count + 3'd1;
+                end
+            end
+        end
+    end
+
+    /* should check whether to display score or rotating numbers */ 
+
     always @ (*) begin
         case (digit_select)
-            2'b00: begin  // Leftmost - min_tens
-                digit_data = min_tens;
-                digit_blank = (adj & ~sel) ? blink_state : 1'b0;
+            2'b00: begin  
+                if(game_over_prev) begin
+                    digit_data = score_digit_one;
+                end else begin
+                    digit_data = digit_one;
+                end
             end
-            2'b01: begin  // Second from left - min_ones
-                digit_data = min_ones;
-                digit_blank = (adj & ~sel) ? blink_state : 1'b0;
+            2'b01: begin  
+                if(game_over_prev) begin
+                    digit_data = score_digit_two;
+                end else if (press_count > 3'd0) begin
+                    digit_data = digit_two;
+                end else begin 
+                    digit_data = 4'b1111; // blank
+                end
             end
-            2'b10: begin  // Third from left - sec_tens
-                digit_data = sec_tens;
-                digit_blank = (adj & sel) ? blink_state : 1'b0;
+            2'b10: begin  
+                if(game_over_prev) begin
+                    digit_data = score_digit_three;
+                end else if (press_count > 3'd1) begin
+                    digit_data = digit_three;
+                end else begin
+                    digit_data = 4'b1111; // blank
+                end
             end
-            2'b11: begin  // Rightmost - sec_ones
-                digit_data = sec_ones;
-                digit_blank = (adj & sel) ? blink_state : 1'b0;
+            2'b11: begin 
+                if(game_over_prev) begin
+                    digit_data = score_digit_four;
+                end else if (press_count > 3'd2) begin
+                    digit_data = digit_four;
+                end else begin
+                    digit_data = 4'b1111; // blank
+                end
             end
         endcase
     end
