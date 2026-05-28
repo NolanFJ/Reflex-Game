@@ -15,10 +15,13 @@ module sound(
         dc_count = 0;
     end
 
-    // Stage 1: Frequency divider — controls pitch
-    // f_clk toggles every N clocks → freq = clk / (2*N)
+    // Stage 1: Frequency divider — only runs when volume > 0
     always @(posedge clk) begin
-        if (f_count >= N) begin      
+        if (volume == 0) begin
+            f_count <= 0;
+            f_clk   <= 0;    // hold f_clk low when silent
+        end
+        else if (f_count >= N) begin      
             f_count <= 0;
             f_clk   <= ~f_clk;
         end
@@ -26,7 +29,7 @@ module sound(
             f_count <= f_count + 1;
     end
 
-    // Stage 2: Duty cycle — controls volume
+    // Stage 2: Duty cycle
     always @(posedge f_clk) begin
         dc_count <= dc_count + 1;
         if (dc_count < volume)
