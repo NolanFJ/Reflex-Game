@@ -3,6 +3,7 @@ Inputs:
     - clock 
     - button press
     - reset button press 
+
     
 Outputs: 
     - each of the digits of the numbers (4 digits)
@@ -19,12 +20,12 @@ module number (
     input fourth_clk,
     input rst, 
     input button_press, 
-
     output reg [3:0] digit_four,
     output reg [3:0] digit_three,
     output reg [3:0] digit_two,
     output reg [3:0] digit_one,
-    output game_over 
+    output reg game_over 
+);
 
     /* Track button press count */
     reg [2:0] press_count;
@@ -32,10 +33,12 @@ module number (
 
     /* assign all the digits a random start digit */ 
     /* digit one to four is left to right so imagine digit one as the minute tens */ 
-    digit_one <= urandom_range(0,9); 
-    digit_two <= urandom_range(0,9);
-    digit_three <= urandom_range(0,9);
-    digit_four <= urandom_range(0,9);
+    initial begin
+        digit_one = $random % 10;
+        digit_two = $random % 10;
+        digit_three = $random % 10;
+        digit_four = $random % 10;
+    end
 
     /* 
     Detect when the button is pressed 
@@ -53,6 +56,7 @@ module number (
                     game_over <= 1'b1; 
                 end else begin
                     press_count <= press_count + 3'd1;
+                    $display("Button pressed! Press count: %d", press_count + 1);
                 end
             end
         end
@@ -62,7 +66,7 @@ module number (
 
     always @ (posedge first_clk) begin
         if (rst) begin
-            digit_one <= urandom_range(0,9);
+            digit_one <= $random % 10;
         /* Only increment digit_one when press_count == 0 */ 
         end else if (press_count == 2'd0) begin
             if (digit_one == 9) begin
@@ -75,7 +79,7 @@ module number (
     
     always @ (posedge second_clk) begin
         if (rst) begin
-            digit_two <= urandom_range(0,9);
+            digit_two <= $random % 10;
         /* Only increment digit_two when press_count == 1 */ 
         end else if (press_count == 2'd1) begin
             if (digit_two == 9) begin
@@ -88,7 +92,7 @@ module number (
     
     always @ (posedge third_clk) begin
         if (rst) begin
-            digit_three <= urandom_range(0,9);
+            digit_three <= $random % 10;
         /* Only increment digit_three when press_count == 2 */ 
         end else if (press_count == 2'd2) begin
             if (digit_three == 9) begin
@@ -101,7 +105,7 @@ module number (
     
     always @ (posedge fourth_clk) begin
         if (rst) begin
-            digit_four <= urandom_range(0,9);
+            digit_four <= $random % 10;
         /* Only increment digit_four when press_count == 3 */ 
         end else if (press_count == 2'd3) begin
             if (digit_four == 9) begin
@@ -111,5 +115,4 @@ module number (
             end
         end
     end
-)
 endmodule
