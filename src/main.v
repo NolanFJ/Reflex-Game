@@ -18,6 +18,11 @@ module main (
     wire [3:0] digit_one;
     wire game_over;
 
+    wire [3:0] score_digit_four;
+    wire [3:0] score_digit_three;
+    wire [3:0] score_digit_two;
+    wire [3:0] score_digit_one;
+
     wire first_clk; 
     wire second_clk; 
     wire third_clk; 
@@ -29,7 +34,7 @@ module main (
         .clk_5hz(first_clk),
         .clk_10hz(second_clk),
         .clk_15hz(third_clk),
-        .clk_18hz(fourth_clk)
+        .clk_18hz(fourth_clk),
         .clk_50hz(debouncer_clk)
     );
 
@@ -52,11 +57,14 @@ module main (
         .clk_sys(clk_sys),
         .rst(rst),
         .game_over(game_over),
-        .button_press(button_press),
+        .digit_four(digit_four),
+        .digit_three(digit_three),
+        .digit_two(digit_two),
+        .digit_one(digit_one),
         .score_digit_four(score_digit_four),
         .score_digit_three(score_digit_three),
         .score_digit_two(score_digit_two),
-        .score_digit_one(score_digit_one) 
+        .score_digit_one(score_digit_one)
     );
 
     display disp_inst (
@@ -66,6 +74,10 @@ module main (
         .digit_two(digit_two),
         .digit_one(digit_one),
         .game_over(game_over),
+        .score_digit_four(score_digit_four),
+        .score_digit_three(score_digit_three),
+        .score_digit_two(score_digit_two),
+        .score_digit_one(score_digit_one),
         .button_press(button_press),
         .seg(seg),
         .dp(dp),
