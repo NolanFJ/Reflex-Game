@@ -28,8 +28,8 @@ module score (
         end else if (game_over) begin
             score_digit_four  <= 4'hF;
             score_digit_three <= 4'hF;
-            score_digit_two   <= (scaled >= 7'd100) ? 4'd9 : scaled / 10;
-            score_digit_one   <= (scaled >= 7'd100) ? 4'd9 : scaled % 10;
+            score_digit_two   <= 4'd0;
+            score_digit_one   <= 4'd0;
         end
     end
 

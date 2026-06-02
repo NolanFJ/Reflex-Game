@@ -21,6 +21,7 @@ module main (
     wire [3:0] digit_two;
     wire [3:0] digit_one;
     wire game_over;
+    wire [2:0] press_count;
 
     wire [3:0] score_digit_four;
     wire [3:0] score_digit_three;
@@ -75,7 +76,8 @@ module main (
         .digit_three(digit_three),
         .digit_two(digit_two),
         .digit_one(digit_one),
-        .game_over(game_over)
+        .game_over(game_over),
+        .press_count(press_count)
     );
 
     score score_inst (
@@ -105,6 +107,7 @@ module main (
         .score_digit_two(score_digit_two),
         .score_digit_one(score_digit_one),
         .button_press(button_press),
+        .press_count(press_count),
         .seg(seg),
         .dp(dp),
         .an(an)

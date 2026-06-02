@@ -24,20 +24,20 @@ module number (
     output reg [3:0] digit_three,
     output reg [3:0] digit_two,
     output reg [3:0] digit_one,
-    output reg game_over 
+    output reg game_over,
+    output reg [2:0] press_count 
 );
 
     /* Track button press count */
-    reg [2:0] press_count;
     reg button_press_prev;
 
     /* assign all the digits a random start digit */ 
     /* digit one to four is left to right so imagine digit one as the minute tens */ 
     initial begin
-        digit_one = $random % 10;
-        digit_two = $random % 10;
-        digit_three = $random % 10;
-        digit_four = $random % 10;
+        digit_one = 4'd3;
+        digit_two = 4'd7;
+        digit_three = 4'd2;
+        digit_four = 4'd8;
     end
 
     /* 
@@ -66,7 +66,7 @@ module number (
 
     always @ (posedge first_clk) begin
         if (rst) begin
-            digit_one <= $random % 10;
+            digit_one <= 4'd3;
         /* Only increment digit_one when press_count == 0 */ 
         end else if (press_count == 2'd0) begin
             if (digit_one == 9) begin
@@ -79,7 +79,7 @@ module number (
     
     always @ (posedge second_clk) begin
         if (rst) begin
-            digit_two <= $random % 10;
+            digit_two <= 4'd7;
         /* Only increment digit_two when press_count == 1 */ 
         end else if (press_count == 2'd1) begin
             if (digit_two == 9) begin
@@ -92,7 +92,7 @@ module number (
     
     always @ (posedge third_clk) begin
         if (rst) begin
-            digit_three <= $random % 10;
+            digit_three <= 4'd2;
         /* Only increment digit_three when press_count == 2 */ 
         end else if (press_count == 2'd2) begin
             if (digit_three == 9) begin
@@ -105,7 +105,7 @@ module number (
     
     always @ (posedge fourth_clk) begin
         if (rst) begin
-            digit_four <= $random % 10;
+            digit_four <= 4'd8;
         /* Only increment digit_four when press_count == 3 */ 
         end else if (press_count == 2'd3) begin
             if (digit_four == 9) begin

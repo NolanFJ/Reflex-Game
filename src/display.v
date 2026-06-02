@@ -21,7 +21,8 @@ module display (
     input [3:0] score_digit_three,
     input [3:0] score_digit_two,
     input [3:0] score_digit_one,
-    input button_press, 
+    input button_press,
+    input [2:0] press_count,
     output reg [6:0] seg,
     output reg dp,
     output reg [3:0] an
@@ -42,27 +43,12 @@ module display (
     reg [3:0] digit_data;  
     reg game_over_prev = 0;  
 
-    /* Track button press count */
-    reg [2:0] press_count;
-    reg button_press_prev; 
-
     always @ (posedge clk_sys) begin
         if (game_over) 
             game_over_prev <= 1'b1; 
 
         if (rst) begin
-            press_count <= 3'd0;
-            button_press_prev <= 1'b0;
-        
-        end else begin
-            button_press_prev <= button_press;
-            if (~button_press_prev && button_press) begin
-                if (press_count == 3'd4) begin
-                    press_count <= 3'd4; // cap at 4
-                end else begin
-                    press_count <= press_count + 3'd1;
-                end
-            end
+            game_over_prev <= 1'b0;
         end
     end
 
