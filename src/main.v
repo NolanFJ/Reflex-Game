@@ -20,7 +20,7 @@ module main (
     wire [3:0] digit_three;
     wire [3:0] digit_two;
     wire [3:0] digit_one;
-    wire game_over;
+    wire game_over = 1'b0;
     wire [2:0] press_count;
 
     wire [3:0] score_digit_four;
@@ -33,6 +33,10 @@ module main (
     wire third_clk; 
     wire fourth_clk;
     wire debouncer_clk;
+    
+    // Debounced inputs
+    wire button_press_debounced;
+    wire rst_debounced;
 
     reg game_over_prev;
     reg [27:0] sound_timer;
@@ -64,14 +68,32 @@ module main (
         .clk_50Hz(debouncer_clk)
     );
 
+    // Debounce button press input
+    debouncer button_debouncer (
+        .clk(clk_sys),
+        .rst(rst),
+        .clk_en(debouncer_clk),
+        .btn_in(button_press),
+        .btn_out(button_press_debounced)
+    );
+
+    // Debounce reset input
+    debouncer rst_debouncer (
+        .clk(clk_sys),
+        .rst(1'b0),
+        .clk_en(debouncer_clk),
+        .btn_in(rst),
+        .btn_out(rst_debounced)
+    );
+
     number num_inst (
         .clk_sys(clk_sys),
         .first_clk(first_clk),
         .second_clk(second_clk),
         .third_clk(third_clk),
         .fourth_clk(fourth_clk),
-        .rst(rst),
-        .button_press(button_press),
+        .rst(rst_debounced),
+        .button_press(button_press_debounced),
         .digit_four(digit_four),
         .digit_three(digit_three),
         .digit_two(digit_two),
@@ -82,7 +104,7 @@ module main (
 
     score score_inst (
         .clk_sys(clk_sys),
-        .rst(rst),
+        .rst(rst_debounced),
         .game_over(game_over),
         .digit_four(digit_four),
         .digit_three(digit_three),
@@ -100,13 +122,13 @@ module main (
         .digit_three(digit_three),
         .digit_two(digit_two),
         .digit_one(digit_one),
-        .rst(rst),
+        .rst(rst_debounced),
         .game_over(game_over),
         .score_digit_four(score_digit_four),
         .score_digit_three(score_digit_three),
         .score_digit_two(score_digit_two),
         .score_digit_one(score_digit_one),
-        .button_press(button_press),
+        .button_press(button_press_debounced),
         .press_count(press_count),
         .seg(seg),
         .dp(dp),

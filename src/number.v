@@ -34,6 +34,7 @@ module number (
     /* assign all the digits a random start digit */ 
     /* digit one to four is left to right so imagine digit one as the minute tens */ 
     initial begin
+        game_over = 1'b0; 
         digit_one = 4'd3;
         digit_two = 4'd7;
         digit_three = 4'd2;
