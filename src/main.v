@@ -9,7 +9,11 @@ module main (
 
     output [6:0] seg,
     output dp,
-    output [3:0] an
+    output [3:0] an,
+    output AIN,
+    output SHUTDOWN_N,
+    output GAIN
+
 );
 
     wire [3:0] digit_four;
@@ -28,6 +32,27 @@ module main (
     wire third_clk; 
     wire fourth_clk;
     wire debouncer_clk;
+
+    reg game_over_prev;
+    reg [27:0] sound_timer;
+    wire play_sound = (sound_timer != 0);
+
+    always @(posedge clk_sys or posedge rst) begin
+        if (rst) begin
+            game_over_prev <= 1'b0;
+            sound_timer <= 28'd0;
+        end else begin
+            game_over_prev <= game_over;
+            if (game_over && !game_over_prev) begin
+                sound_timer <= 28'd100_000_000;
+            end else if (sound_timer != 0) begin
+                sound_timer <= sound_timer - 1;
+            end
+        end
+    end
+
+    assign SHUTDOWN_N = 1'b1;
+    assign GAIN = 1'b0;
 
     clock clock_inst (
         .clk_sys(clk_sys),
@@ -82,6 +107,13 @@ module main (
         .seg(seg),
         .dp(dp),
         .an(an)
+    );
+
+    sound sound_inst (
+        .clk(clk_sys),
+        .volume(play_sound ? 8'd200 : 8'd0),
+        .N(10'd400),
+        .sout(AIN)  
     );
 
 endmodule
