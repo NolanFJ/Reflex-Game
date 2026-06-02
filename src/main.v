@@ -54,13 +54,13 @@ module main (
     assign SHUTDOWN_N = 1'b1;
     assign GAIN = 1'b0;
 
-    clock clock_inst (
-        .clk_sys(clk_sys),
-        .clk_5hz(first_clk),
-        .clk_10hz(second_clk),
-        .clk_15hz(third_clk),
-        .clk_18hz(fourth_clk),
-        .clk_50hz(debouncer_clk)
+    clock_module clock_inst (
+        .master_clk(clk_sys),
+        .clk_5Hz(first_clk),
+        .clk_10Hz(second_clk),
+        .clk_15Hz(third_clk),
+        .clk_18Hz(fourth_clk),
+        .clk_50Hz(debouncer_clk)
     );
 
     number num_inst (
@@ -98,6 +98,7 @@ module main (
         .digit_three(digit_three),
         .digit_two(digit_two),
         .digit_one(digit_one),
+        .rst(rst),
         .game_over(game_over),
         .score_digit_four(score_digit_four),
         .score_digit_three(score_digit_three),

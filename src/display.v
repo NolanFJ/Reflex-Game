@@ -15,6 +15,7 @@ module display (
     input [3:0] digit_three,
     input [3:0] digit_two,
     input [3:0] digit_one,
+    input rst, 
     input game_over,
     input [3:0] score_digit_four,
     input [3:0] score_digit_three,
@@ -109,9 +110,9 @@ module display (
     // 7-segment decoder (common anode: 0=segment ON, 1=segment OFF)
     // Segment mapping: seg[6:0] = {g, f, e, d, c, b, a}
     always @ (*) begin
-        if (digit_blank) begin
+        if (rst) begin
             seg = 7'b1111111;  // All segments off
-            dp = 1'b1;
+            dp = 1'b1;  // Decimal point off
         end else begin
             case (digit_data)
                 4'h0: seg = 7'b1000000;  // 0
@@ -129,6 +130,7 @@ module display (
             dp = 1'b1;  // Decimal point off
         end
     end
+
     
     // Anode decoder (common anode: 0=digit ON, 1=digit OFF)
     always @ (*) begin
