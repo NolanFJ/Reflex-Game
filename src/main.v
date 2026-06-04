@@ -20,7 +20,7 @@ module main (
     wire [3:0] digit_three;
     wire [3:0] digit_two;
     wire [3:0] digit_one;
-    wire game_over = 1'b0;
+    wire game_over;
     wire [2:0] press_count;
 
     wire [3:0] score_digit_four;
@@ -47,8 +47,7 @@ module main (
             game_over_prev <= 1'b0;
             sound_timer <= 28'd0;
         end else begin
-            game_over_prev <= game_over;
-            if (game_over && !game_over_prev) begin
+            if (game_over) begin
                 sound_timer <= 28'd100_000_000;
             end else if (sound_timer != 0) begin
                 sound_timer <= sound_timer - 1;
@@ -92,7 +91,7 @@ module main (
         .second_clk(second_clk),
         .third_clk(third_clk),
         .fourth_clk(fourth_clk),
-        .rst(rst_debounced),
+         .rst(rst_debounced),
         .button_press(button_press_debounced),
         .digit_four(digit_four),
         .digit_three(digit_three),

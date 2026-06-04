@@ -41,30 +41,19 @@ module display (
 
     // Determine digit to display and blanking
     reg [3:0] digit_data;  
-    reg game_over_prev = 0;  
-
-    always @ (posedge clk_sys) begin
-        if (game_over) 
-            game_over_prev <= 1'b1; 
-
-        if (rst) begin
-            game_over_prev <= 1'b0;
-        end
-    end
-
     /* should check whether to display score or rotating numbers */ 
 
     always @ (*) begin
         case (digit_select)
             2'b00: begin  
-                if(game_over_prev) begin
+                if(game_over) begin
                     digit_data = score_digit_one;
                 end else begin
                     digit_data = digit_one;
                 end
             end
             2'b01: begin  
-                if(game_over_prev) begin
+                if(game_over) begin
                     digit_data = score_digit_two;
                 end else if (press_count > 3'd0) begin
                     digit_data = digit_two;
@@ -73,7 +62,7 @@ module display (
                 end
             end
             2'b10: begin  
-                if(game_over_prev) begin
+                if(game_over) begin
                     digit_data = score_digit_three;
                 end else if (press_count > 3'd1) begin
                     digit_data = digit_three;
@@ -82,7 +71,7 @@ module display (
                 end
             end
             2'b11: begin 
-                if(game_over_prev) begin
+                if(game_over) begin
                     digit_data = score_digit_four;
                 end else if (press_count > 3'd2) begin
                     digit_data = digit_four;

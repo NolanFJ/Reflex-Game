@@ -30,6 +30,8 @@ module number (
 
     /* Track button press count */
     reg button_press_prev;
+    reg [27:0] debounce_timer;  // Timer to prevent multiple detections from bouncing
+    wire debounce_ready = (debounce_timer == 0);
 
     /* assign all the digits a random start digit */ 
     /* digit one to four is left to right so imagine digit one as the minute tens */ 
@@ -45,20 +47,32 @@ module number (
     Detect when the button is pressed 
         - keeps track of count of button presses to determine game end
         - only increments the corresponding digit based on button press count
+        - includes debounce hold timer to prevent bounce-induced multiple presses
     */
     always @ (posedge clk_sys) begin
         if (rst) begin
+            game_over <= 1'b0;
             press_count <= 3'd0;
             button_press_prev <= 1'b0;
+            debounce_timer <= 28'd0;
         end else begin
             button_press_prev <= button_press;
-            if (~button_press_prev && button_press) begin
-                if (press_count == 3'd4) begin
+            
+            // Decrement debounce timer
+            if (debounce_timer != 0) begin
+                debounce_timer <= debounce_timer - 1;
+            end
+            
+            // Detect button edge only if debounce timer has expired
+            if (~button_press_prev && button_press && debounce_ready) begin
+                if (press_count >= 3'd4) begin
                     game_over <= 1'b1; 
                 end else begin
                     press_count <= press_count + 3'd1;
                     $display("Button pressed! Press count: %d", press_count + 1);
                 end
+                // Set debounce timer for ~100ms (5 million cycles at 50MHz)
+                debounce_timer <= 28'd5_000_000;
             end
         end
     end
