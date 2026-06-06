@@ -65,14 +65,16 @@ module number (
             
             // Detect button edge only if debounce timer has expired
             if (~button_press_prev && button_press && debounce_ready) begin
-                if (press_count >= 3'd4) begin
+                if (press_count == 3'd3) begin
                     game_over <= 1'b1; 
+                    $display("Game over triggered at press count %d", press_count + 1);
                 end else begin
                     press_count <= press_count + 3'd1;
                     $display("Button pressed! Press count: %d", press_count + 1);
                 end
-                // Set debounce timer for ~100ms (5 million cycles at 50MHz)
-                debounce_timer <= 28'd5_000_000;
+                // Set debounce timer for short interval to allow fast presses
+                // At 100 MHz, 100_000 cycles ~= 1 ms
+                debounce_timer <= 28'd100_000;
             end
         end
     end

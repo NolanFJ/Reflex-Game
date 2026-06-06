@@ -22,7 +22,9 @@
     parameter COUNT_10HZ = 4_999_999;      // 100MHz / (2 * 10Hz)
     parameter COUNT_15HZ = 3_333_332;      // 100MHz / (2 * 15Hz) - rounded
     parameter COUNT_18HZ = 2_777_777;      // 100Mhz / (2 * 18Hz) - rounded
-    parameter COUNT_50HZ = 999_999;        // 100MHz / (2 * 50Hz)
+    // Reduce the 50Hz divider to produce ~1kHz for the debouncer
+    // 100MHz / (2 * 1000Hz) = 50_000 -> use 49_999 for integer counter
+    parameter COUNT_50HZ = 49_999;        // ~1kHz sampling for debouncer
 
     reg [31:0] counter_5Hz = 0;
     reg [31:0] counter_10Hz = 0;

@@ -38,22 +38,13 @@ module main (
     wire button_press_debounced;
     wire rst_debounced;
 
-    reg game_over_prev;
+    // Sound timer: triggers 2-second sound on game over rising edge
+    // Assumes 100 MHz clock: 2 seconds = 200,000,000 cycles
+    localparam SOUND_DURATION_CYCLES = 28'd200_000_000;  // 2 seconds at 100 MHz
+    
     reg [27:0] sound_timer;
-    wire play_sound = (sound_timer != 0);
-
-    always @(posedge clk_sys or posedge rst) begin
-        if (rst) begin
-            game_over_prev <= 1'b0;
-            sound_timer <= 28'd0;
-        end else begin
-            if (game_over) begin
-                sound_timer <= 28'd100_000_000;
-            end else if (sound_timer != 0) begin
-                sound_timer <= sound_timer - 1;
-            end
-        end
-    end
+    reg game_over_prev;  // Track previous game_over for edge detection
+    
 
     assign SHUTDOWN_N = 1'b1;
     assign GAIN = 1'b0;
@@ -136,7 +127,7 @@ module main (
 
     sound sound_inst (
         .clk(clk_sys),
-        .volume(play_sound ? 8'd200 : 8'd0),
+        .game_over(game_over),
         .N(10'd400),
         .sout(AIN)  
     );
